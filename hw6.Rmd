@@ -1,0 +1,39 @@
+---
+title: "hw6"
+author: "Grant Ruedy"
+date: "4/22/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1.
+```{r}
+library(readxl)
+dogs <- read_excel("/Users/grantruedy/ds202_hw6/KIB - Best in Show (public)1.xlsx", sheet='Best in show full sheet')
+
+dogs <- dogs[-c(0:3),]
+library(tidyverse)
+
+dogs <- dogs %>% rename(breed=`Best in show?`, type =`largest value`, popularity = '87', intelligence= X__6, 
+                size=X__20, data_score=X__3)
+
+dogs <- dogs[,c(1,3,5,7,12,32)]
+dogs$data_score <- as.numeric(dogs$data_score)
+dogs$popularity <- as.numeric(dogs$popularity)
+dogs$intelligence <- as.numeric(dogs$intelligence)
+dogs$size1 <- ifelse(dogs$size == 'small', 2.5 , ifelse(dogs$size == 'medium' , 3, ifelse(dogs$size == 'large' , 4, NA)))
+dogs$popularity1 <- -1*dogs$popularity
+```
+
+2.
+```{r}
+ggplot(dogs, aes(x=data_score, y=popularity1, color=type)) + geom_vline(xintercept = 2.3) + geom_hline(yintercept = -44) + geom_text(na.rm=T,label=as.character(dogs$breed),angle=dogs$intelligence*2,size=dogs$size1) +
+  theme(axis.text.x = element_blank()) + theme(axis.text.y = element_blank())+
+  ylab('Popularity') + xlab('Data Score') + ggtitle(expression(paste("Best in Show: The Ultimate Data Dog  |  intelligence=word angle, size=word size" )))
+ 
+```
+
+This graph shows different dogs ranked on a scale from popularity as well as the data score given to them by information is beautiful. The bottom left is the lowest score for both categories, while the top right is the highest score for both. The breed of dog is shown by the words on the graph. The intelligence of the dog is shown by how much angle is in the word, with a steeper angle being smarter. The type of dog is shown by the different colors, and there is 7 different types of dogs. Finally, the size of the dog (small, medium, or large) is shown by the font size of the words, with large dogs having the largest font.
